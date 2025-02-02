@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <title>ශ්‍රී ලංකා ඉතිහාස Timeline</title>
+  <!-- Import vis-timeline CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/vis-timeline/styles/vis-timeline-graph2d.min.css" type="text/css" />
+  <script type="text/javascript" src="https://unpkg.com/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js"></script>
+  <style>
+    /* Global Styling */
+    body {
+      font-family: 'Iskoola Pota', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #eef2f3;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    /* Input Section */
+    .input-section {
+      background-color: #f7f7f7;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    .input-section h3 {
+      margin-top: 0;
+      color: #007BFF;
+    }
+    .input-group {
+      margin: 10px 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #444;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007BFF;
+      border: none;
+      padding: 10px 15px;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    /* Timeline Container */
+    #timeline {
+      height: 450px;
+      border: none;
+      margin-bottom: 20px;
+    }
+    /* Standard Timeline Container */
+    #standardTimelineContainer {
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    #standardTimeline {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    #standardTimeline li {
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    #standardTimeline li:hover {
+      background-color: #f0f0f0;
+    }
+    /* Modal Styling for Event Details */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 6px;
+      position: relative;
+    }
+    .close {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+      color: #000;
+    }
+    /* Custom Timeline Item Styling to emulate time.graphics look */
+    .vis-item {
+      border: none !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      border-left: 4px solid #2196F3;
+      padding: 8px 12px;
+      border-radius: 4px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .vis-item:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .vis-item .vis-item-content {
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+    }
+    /* Custom Axis Styling */
+    .vis-time-axis .vis-text {
+      fill: #555;
+      font-size: 12px;
+    }
+    .vis-panel.vis-center {
+      background-color: #f0f0f0;
+      border-top: 2px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>ශ්‍රී ලංකා ඉතිහාස Timeline</h1>
+    
+    <!-- Input Section for New Events -->
+    <div class="input-section">
+      <h3>නව සිදුවීමක් එකතු කරන්න</h3>
+      <div class="input-group">
+        <label for="eventDate">දිනය:</label>
+        <input type="date" id="eventDate" min="1945-01-01" max="2025-01-01">
+      </div>
+      <div class="input-group">
+        <label for="eventTitle">සිදුවීමේ මාතෘකාව:</label>
+        <input type="text" id="eventTitle" placeholder="මාතෘකාව ඇතුළත් කරන්න">
+      </div>
+      <div class="input-group">
+        <label for="eventDescription">සිදුවීමේ විස්තරය:</label>
+        <textarea id="eventDescription" rows="4" placeholder="විස්තර ඇතුළත් කරන්න"></textarea>
+      </div>
+      <button onclick="addEvent()">එකතු කරන්න</button>
+    </div>
+
+    <!-- Graphical Timeline Display Section -->
+    <div id="timeline"></div>
+
+    <!-- Standard Timeline Display Section -->
+    <div id="standardTimelineContainer">
+      <h2>සම්මත ඉතිහාස ලයින්</h2>
+      <ul id="standardTimeline"></ul>
+    </div>
+    
+    <!-- (මෙහි "සියලු සිදුවීම් මකන්න" බොත්තම ඉවත් කර ඇත) -->
+  </div>
+
+  <!-- Modal Dialog for Viewing & Deleting an Event -->
+  <div id="eventModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <p id="modalDate"></p>
+      <p id="modalDescription"></p>
+      <div style="text-align: right; margin-top: 15px;">
+        <button onclick="deleteEvent()">මෙම සිදුවීම මකන්න</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Create a DataSet for timeline items
+    let items = new vis.DataSet([]);
+    let selectedEventId = null;
+
+    // Timeline options configuration
+    const options = {
+      min: new Date('1945-01-01'),
+      max: new Date('2025-01-01'),
+      locale: 'si-LK',
+      editable: false,
+      zoomMin: 1000 * 60 * 60 * 24 * 30,  // One month zoom level minimum
+      zoomMax: 1000 * 60 * 60 * 24 * 365 * 5,  // Five years zoom level maximum
+      orientation: {
+        axis: 'bottom', // Display the time axis at the bottom
+        item: 'top'     // Position items above the axis
+      },
+      margin: {
+        item: 20,
+        axis: 40
+      }
+    };
+
+    // Create the timeline instance
+    const container = document.getElementById('timeline');
+    const timeline = new vis.Timeline(container, items, options);
+
+    // When an event is selected on the timeline, open the modal
+    timeline.on('select', function(properties) {
+      if (properties.items.length > 0) {
+        selectedEventId = properties.items[0];
+        const event = items.get(selectedEventId);
+        openModal(event);
+      }
+    });
+
+    // Add a new event to the timeline
+    function addEvent() {
+      const date = document.getElementById('eventDate').value;
+      const title = document.getElementById('eventTitle').value;
+      const description = document.getElementById('eventDescription').value;
+
+      if (!date || !title || !description) {
+        alert('කරුණාකර සියලු තොරතුරු ඇතුළත් කරන්න');
+        return;
+      }
+
+      const newEvent = {
+        id: Date.now(),  // Create a unique ID
+        content: title,
+        start: date,
+        description: description
+      };
+
+      items.add(newEvent);
+      saveToLocalStorage();
+      renderStandardTimeline();
+      clearForm();
+    }
+
+    // Clear the input form fields
+    function clearForm() {
+      document.getElementById('eventDate').value = '';
+      document.getElementById('eventTitle').value = '';
+      document.getElementById('eventDescription').value = '';
+    }
+
+    // Open the modal and display event details
+    function openModal(event) {
+      document.getElementById('modalTitle').textContent = event.content;
+      document.getElementById('modalDate').textContent = new Date(event.start).toLocaleDateString('si-LK');
+      document.getElementById('modalDescription').textContent = event.description;
+      document.getElementById('eventModal').style.display = 'block';
+    }
+
+    // Close the modal dialog
+    function closeModal() {
+      document.getElementById('eventModal').style.display = 'none';
+      timeline.setSelection([]);
+      selectedEventId = null;
+    }
+
+    // Delete the selected event
+    function deleteEvent() {
+      if (selectedEventId && confirm('ඔබට මෙම සිදුවීම මකීමට අවශ්‍යද?')) {
+        items.remove(selectedEventId);
+        saveToLocalStorage();
+        renderStandardTimeline();
+        closeModal();
+      }
+    }
+
+    // Save timeline events to Local Storage
+    function saveToLocalStorage() {
+      localStorage.setItem('timelineEvents', JSON.stringify(items.get()));
+    }
+
+    // Render the standard timeline as a sorted list
+    function renderStandardTimeline() {
+      const timelineContainer = document.getElementById('standardTimeline');
+      timelineContainer.innerHTML = '';
+      let eventsArray = items.get();
+      // Sort events by date
+      eventsArray.sort((a, b) => new Date(a.start) - new Date(b.start));
+      eventsArray.forEach(event => {
+        const li = document.createElement('li');
+        li.textContent = new Date(event.start).toLocaleDateString('si-LK') + ' - ' + event.content;
+        li.onclick = function() {
+          selectedEventId = event.id;
+          openModal(event);
+        };
+        timelineContainer.appendChild(li);
+      });
+    }
+
+    // Load timeline events from Local Storage on page load
+    function loadFromLocalStorage() {
+      const savedEvents = localStorage.getItem('timelineEvents');
+      if (savedEvents) {
+        const events = JSON.parse(savedEvents);
+        items.clear();
+        items.add(events);
+      }
+      renderStandardTimeline();
+    }
+
+    // Load saved events when the window loads
+    window.onload = loadFromLocalStorage;
+
+    // Close modal if the user clicks outside the modal content
+    window.onclick = function(event) {
+      const modal = document.getElementById('eventModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+
+    // Arrow keys event listener to move the timeline
+    document.addEventListener('keydown', function(e) {
+      // prevent key events when an input or textarea is focused
+      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
+        return;
+      }
+      
+      // Get the current center of the timeline window
+      const windowRange = timeline.getWindow();
+      const currentCenter = (windowRange.start.getTime() + windowRange.end.getTime()) / 2;
+      // Define shift interval as 10% of the current visible interval
+      const interval = windowRange.end.getTime() - windowRange.start.getTime();
+      const shift = interval * 0.1;
+      
+      if (e.key === 'ArrowLeft') {
+        // Move timeline to the left
+        timeline.moveTo(new Date(currentCenter - shift), {animation: true});
+      } else if (e.key === 'ArrowRight') {
+        // Move timeline to the right
+        timeline.moveTo(new Date(currentCenter + shift), {animation: true});
+      }
+    });
+  </script>
+</body>
+</html>
+
