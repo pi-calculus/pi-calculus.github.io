@@ -25,46 +25,6 @@
       text-align: center;
       color: #333;
     }
-    .input-section {
-      background-color: #f7f7f7;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-    }
-    .input-section h3 {
-      margin-top: 0;
-      color: #007BFF;
-    }
-    .input-group {
-      margin: 10px 0;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #444;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    button {
-      background-color: #007BFF;
-      border: none;
-      padding: 10px 15px;
-      color: white;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background-color 0.2s ease;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
     #timeline {
       height: 450px;
       border: none;
@@ -157,23 +117,6 @@
   <div class="container">
     <h1>ශ්‍රී ලංකා ඉතිහාස Timeline</h1>
     
-    <div class="input-section">
-      <h3>නව සිදුවීමක් එකතු කරන්න</h3>
-      <div class="input-group">
-        <label for="eventDate">දිනය:</label>
-        <input type="date" id="eventDate" min="1945-01-01" max="2025-01-01">
-      </div>
-      <div class="input-group">
-        <label for="eventTitle">සිදුවීමේ මාතෘකාව:</label>
-        <input type="text" id="eventTitle" placeholder="මාතෘකාව ඇතුළත් කරන්න">
-      </div>
-      <div class="input-group">
-        <label for="eventDescription">සිදුවීමේ විස්තරය:</label>
-        <textarea id="eventDescription" rows="4" placeholder="විස්තර ඇතුළත් කරන්න"></textarea>
-      </div>
-      <button onclick="addEvent()">එකතු කරන්න</button>
-    </div>
-
     <div id="timeline"></div>
 
     <div id="standardTimelineContainer">
@@ -188,14 +131,11 @@
       <h2 id="modalTitle"></h2>
       <p id="modalDate"></p>
       <p id="modalDescription"></p>
-      <div style="text-align: right; margin-top: 15px;">
-        <button onclick="deleteEvent()">මෙම සිදුවීම මකන්න</button>
-      </div>
     </div>
   </div>
 
   <script>
-    // Create a DataSet for timeline items with example data
+    // Create a DataSet for timeline items with historical data
     let items = new vis.DataSet([
       {
         id: 1,
@@ -229,9 +169,33 @@
       },
       {
         id: 6,
-        content: "jhbsdjglknsd",
-        start: "1971-11-15",
-        description: "xcnvlkDLKSfvanjslkd lksjhdlkfjas;ldj"
+        content: "නව ආණ්ඩුක්‍රම ව්‍යවස්ථාව",
+        start: "1978-09-07",
+        description: "විධායක ජනාධිපති ක්‍රමය හඳුන්වාදෙන නව ආණ්ඩුක්‍රම ව්‍යවස්ථාව ක්‍රියාත්මක වීම"
+      },
+      {
+        id: 7,
+        content: "සිවිල් යුද්ධය ආරම්භය",
+        start: "1983-07-23",
+        description: "කළු ජූලිය සමඟ දිගුකාලීන සිවිල් යුද්ධය ආරම්භ වීම"
+      },
+      {
+        id: 8,
+        content: "සුනාමි ව්‍යසනය",
+        start: "2004-12-26",
+        description: "ඉන්දියානු සාගර සුනාමියෙන් ශ්‍රී ලංකාවේ වෙරළබඩ ප්‍රදේශ විනාශ වීම"
+      },
+      {
+        id: 9,
+        content: "යුද්ධය අවසානය",
+        start: "2009-05-19",
+        description: "වසර 30ක සිවිල් යුද්ධය අවසන් වීම"
+      },
+      {
+        id: 10,
+        content: "කොවිඩ්-19 පළමු රැල්ල",
+        start: "2020-03-11",
+        description: "ශ්‍රී ලංකාවේ පළමු කොවිඩ්-19 රෝගියා හඳුනාගැනීම"
       }
     ]);
 
@@ -265,35 +229,6 @@
       }
     });
 
-    function addEvent() {
-      const date = document.getElementById('eventDate').value;
-      const title = document.getElementById('eventTitle').value;
-      const description = document.getElementById('eventDescription').value;
-
-      if (!date || !title || !description) {
-        alert('කරුණාකර සියලු තොරතුරු ඇතුළත් කරන්න');
-        return;
-      }
-
-      const newEvent = {
-        id: Date.now(),
-        content: title,
-        start: date,
-        description: description
-      };
-
-      items.add(newEvent);
-      saveToLocalStorage();
-      renderStandardTimeline();
-      clearForm();
-    }
-
-    function clearForm() {
-      document.getElementById('eventDate').value = '';
-      document.getElementById('eventTitle').value = '';
-      document.getElementById('eventDescription').value = '';
-    }
-
     function openModal(event) {
       document.getElementById('modalTitle').textContent = event.content;
       document.getElementById('modalDate').textContent = new Date(event.start).toLocaleDateString('si-LK');
@@ -305,19 +240,6 @@
       document.getElementById('eventModal').style.display = 'none';
       timeline.setSelection([]);
       selectedEventId = null;
-    }
-
-    function deleteEvent() {
-      if (selectedEventId && confirm('ඔබට මෙම සිදුවීම මකීමට අවශ්‍යද?')) {
-        items.remove(selectedEventId);
-        saveToLocalStorage();
-        renderStandardTimeline();
-        closeModal();
-      }
-    }
-
-    function saveToLocalStorage() {
-      localStorage.setItem('timelineEvents', JSON.stringify(items.get()));
     }
 
     function renderStandardTimeline() {
@@ -336,17 +258,7 @@
       });
     }
 
-    function loadFromLocalStorage() {
-      const savedEvents = localStorage.getItem('timelineEvents');
-      if (savedEvents) {
-        const events = JSON.parse(savedEvents);
-        items.clear();
-        items.add(events);
-      }
-      renderStandardTimeline();
-    }
-
-    window.onload = loadFromLocalStorage;
+    window.onload = renderStandardTimeline;
 
     window.onclick = function(event) {
       const modal = document.getElementById('eventModal');
@@ -356,10 +268,6 @@
     }
 
     document.addEventListener('keydown', function(e) {
-      if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
-        return;
-      }
-      
       const windowRange = timeline.getWindow();
       const currentCenter = (windowRange.start.getTime() + windowRange.end.getTime()) / 2;
       const interval = windowRange.end.getTime() - windowRange.start.getTime();
