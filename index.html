@@ -3,282 +3,479 @@
 <head>
   <meta charset="UTF-8">
   <title>ශ්‍රී ලංකා ඉතිහාස Timeline</title>
-  <!-- Import vis-timeline CSS & JS -->
-  <link rel="stylesheet" href="https://unpkg.com/vis-timeline/styles/vis-timeline-graph2d.min.css" type="text/css" />
-  <script type="text/javascript" src="https://unpkg.com/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/vis-timeline/styles/vis-timeline-graph2d.min.css">
+  <!-- vis.js library -->
+  <script src="https://unpkg.com/vis-timeline/standalone/umd/vis-timeline-graph2d.min.js"></script>
+  <!-- Fuse.js for advanced fuzzy search -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
   <style>
+    /* Base styles for the entire application */
     body {
       font-family: 'Iskoola Pota', Arial, sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background-color: #eef2f3;
+      transition: background-color 0.3s ease;
     }
+
     .container {
       max-width: 1200px;
       margin: 20px auto;
-      background: #ffffff;
+      background: white;
       padding: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    h1, h2 {
-      text-align: center;
-      color: #333;
+
+    /* Search and Filter Section Styling */
+    .search-filter-section {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
     }
+
+    .search-box {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .filter-controls select,
+    .filter-controls input[type="date"] {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      flex: 1;
+      min-width: 150px;
+    }
+    
+    .reset-search-button {
+      padding: 8px 15px;
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    
+    .reset-search-button:hover {
+      background-color: #c9302c;
+    }
+
+    /* Timeline Controls Styling */
+    .timeline-controls {
+      display: flex;
+      gap: 10px;
+      margin: 15px 0;
+    }
+
+    .control-button {
+      padding: 8px 15px;
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .control-button:hover {
+      background-color: #357abd;
+    }
+
+    /* Timeline Container */
     #timeline {
       height: 450px;
       border: none;
-      margin-bottom: 20px;
+      margin: 20px 0;
+      background: white;
+      border-radius: 8px;
     }
-    #standardTimelineContainer {
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 15px;
-      margin-bottom: 20px;
-    }
-    #standardTimeline {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    #standardTimeline li {
-      padding: 8px 12px;
-      border-bottom: 1px solid #eee;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    #standardTimeline li:hover {
-      background-color: #f0f0f0;
-    }
-    .modal {
+
+    /* Event Details Modal Styling */
+    .event-details-modal {
       display: none;
       position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.5);
-    }
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
       padding: 20px;
-      border: 1px solid #888;
-      width: 80%;
-      max-width: 600px;
-      border-radius: 6px;
-      position: relative;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      max-width: 500px;
+      width: 90%;
     }
-    .close {
-      color: #aaa;
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+
+    .close-modal {
       position: absolute;
+      right: 10px;
       top: 10px;
-      right: 15px;
-      font-size: 28px;
-      font-weight: bold;
       cursor: pointer;
+      font-size: 24px;
     }
-    .close:hover,
-    .close:focus {
-      color: #000;
+
+    /* Dark Mode Support */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1a1a1a;
+        color: #ffffff;
+      }
+
+      .container {
+        background: #2d2d2d;
+      }
+
+      .search-filter-section {
+        background: #333333;
+      }
+
+      .search-box,
+      .filter-controls select,
+      .filter-controls input[type="date"] {
+        background: #404040;
+        color: #ffffff;
+        border-color: #666;
+      }
+
+      .control-button {
+        background-color: #2c5282;
+      }
+
+      .control-button:hover {
+        background-color: #2a4365;
+      }
+      
+      .reset-search-button {
+        background-color: #a94442;
+      }
+      
+      .reset-search-button:hover {
+        background-color: #922b21;
+      }
+
+      .event-details-modal {
+        background: #2d2d2d;
+        color: white;
+      }
     }
-    .vis-item {
-      border: none !important;
-      background-color: #ffffff !important;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      border-left: 4px solid #2196F3;
-      padding: 8px 12px;
-      border-radius: 4px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .vis-item:hover {
-      transform: scale(1.03);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    .vis-item .vis-item-content {
-      font-size: 14px;
-      color: #333;
-      white-space: nowrap;
-    }
-    .vis-time-axis .vis-text {
-      fill: #555;
-      font-size: 12px;
-    }
-    .vis-panel.vis-center {
-      background-color: #f0f0f0;
-      border-top: 2px solid #ddd;
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 15px;
+      }
+
+      .filter-controls {
+        flex-direction: column;
+      }
+
+      .filter-controls select,
+      .filter-controls input[type="date"] {
+        width: 100%;
+      }
+
+      #timeline {
+        height: 350px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>ශ්‍රී ලංකා ඉතිහාස Timeline</h1>
-    
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-section">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="search-box" 
+        placeholder="සිදුවීම් සොයන්න..."
+      >
+      <div class="filter-controls">
+        <select id="categoryFilter">
+          <option value="">සියලුම කාණ්ඩ</option>
+          <option value="political">දේශපාලනික</option>
+          <option value="cultural">සංස්කෘතික</option>
+          <option value="economic">ආර්ථික</option>
+        </select>
+        <input 
+          type="date" 
+          id="startDate" 
+          min="1945-01-01" 
+          max="2025-01-01"
+        >
+        <input 
+          type="date" 
+          id="endDate" 
+          min="1945-01-01" 
+          max="2025-01-01"
+        >
+      </div>
+      <!-- Reset Search Button -->
+      <button class="reset-search-button" onclick="resetSearchFilters()">Reset Search</button>
+    </div>
+
+    <!-- Timeline Controls -->
+    <div class="timeline-controls">
+      <button class="control-button" onclick="zoomIn()">විශාල කරන්න</button>
+      <button class="control-button" onclick="zoomOut()">කුඩා කරන්න</button>
+      <button class="control-button" onclick="resetView()">Reset Timeline View</button>
+    </div>
+
+    <!-- Timeline -->
     <div id="timeline"></div>
 
+    <!-- Event List -->
     <div id="standardTimelineContainer">
-      <h2>සම්මත ඉතිහාස ලයින්</h2>
+      <h2>සම්මත සිදුවීම්</h2>
       <ul id="standardTimeline"></ul>
     </div>
   </div>
 
-  <div id="eventModal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2 id="modalTitle"></h2>
-      <p id="modalDate"></p>
-      <p id="modalDescription"></p>
-    </div>
+  <!-- Modal Elements -->
+  <div class="modal-overlay" id="modalOverlay"></div>
+  <div class="event-details-modal" id="eventModal">
+    <span class="close-modal" onclick="closeEventDetails()">&times;</span>
+    <h2 id="modalTitle"></h2>
+    <p id="modalDate"></p>
+    <p id="modalDescription"></p>
+    <p id="modalCategory"></p>
   </div>
 
   <script>
-    // Create a DataSet for timeline items with historical data
-    let items = new vis.DataSet([
+    // Date Formatting Utilities
+    function formatToISODate(date) {
+      return date instanceof Date 
+        ? date.toISOString().split('T')[0]
+        : new Date(date).toISOString().split('T')[0];
+    }
+
+    function formatDateForDisplay(isoDate) {
+      const date = new Date(isoDate);
+      return date.toLocaleDateString('si-LK', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    }
+
+    // Debounce function to limit frequency of search function calls
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    // Initialize Timeline Data
+    let timelineData = JSON.parse(localStorage.getItem('timelineEvents')) || [
       {
         id: 1,
         content: "ශ්‍රී ලංකාවේ නිදහස",
         start: "1948-02-04",
-        description: "ශ්‍රී ලංකාව බ්‍රිතාන්‍ය අධිරාජ්‍යයෙන් නිදහස ලබා ගැනීම"
+        description: "ශ්‍රී ලංකාව බ්‍රිතාන්‍ය අධිරාජ්‍යයෙන් නිදහස ලබා ගැනීම",
+        category: "political"
       },
       {
         id: 2,
-        content: "ප්‍රථම අගමැති පත්වීම",
-        start: "1947-09-24",
-        description: "ඩී.එස්. සේනානායක මහතා ශ්‍රී ලංකාවේ ප්‍රථම අගමැති ලෙස පත්වීම"
+        content: "පළමු ජනරජ ව්‍යවස්ථාව",
+        start: "1972-05-22",
+        description: "ශ්‍රී ලංකාව ජනරජයක් බවට පත්වීම සහ නව ව්‍යවස්ථාව හඳුන්වාදීම",
+        category: "political"
       },
       {
         id: 3,
-        content: "සිරිමාවෝ බණ්ඩාරනායක අගමැති පත්වීම",
-        start: "1960-07-21",
-        description: "ලෝකයේ ප්‍රථම කාන්තා අගමැතිනිය ලෙස පත්වීම"
+        content: "ප්‍රථම අගමැති පත්වීම",
+        start: "1947-09-24",
+        description: "ඩී.එස්. සේනානායක මහතා ශ්‍රී ලංකාවේ ප්‍රථම අගමැති ලෙස පත්වීම",
+        category: "political"
       },
       {
         id: 4,
-        content: "ශ්‍රී ලංකාව ජනරජයක් බවට පත්වීම",
-        start: "1972-05-22",
-        description: "නව ආණ්ඩුක්‍රම ව්‍යවස්ථාව යටතේ ශ්‍රී ලංකාව ජනරජයක් බවට පත්වීම"
-      },
-      {
-        id: 5,
-        content: "විවෘත ආර්ථික ප්‍රතිපත්තිය හඳුන්වාදීම",
-        start: "1977-11-15",
-        description: "ජේ.ආර්. ජයවර්ධන ජනාධිපතිතුමා විසින් විවෘත ආර්ථික ප්‍රතිපත්තිය හඳුන්වාදීම"
-      },
-      {
-        id: 6,
-        content: "නව ආණ්ඩුක්‍රම ව්‍යවස්ථාව",
-        start: "1978-09-07",
-        description: "විධායක ජනාධිපති ක්‍රමය හඳුන්වාදෙන නව ආණ්ඩුක්‍රම ව්‍යවස්ථාව ක්‍රියාත්මක වීම"
-      },
-      {
-        id: 7,
-        content: "සිවිල් යුද්ධය ආරම්භය",
-        start: "1983-07-23",
-        description: "කළු ජූලිය සමඟ දිගුකාලීන සිවිල් යුද්ධය ආරම්භ වීම"
-      },
-      {
-        id: 8,
-        content: "සුනාමි ව්‍යසනය",
-        start: "2004-12-26",
-        description: "ඉන්දියානු සාගර සුනාමියෙන් ශ්‍රී ලංකාවේ වෙරළබඩ ප්‍රදේශ විනාශ වීම"
-      },
-      {
-        id: 9,
-        content: "යුද්ධය අවසානය",
-        start: "2009-05-19",
-        description: "වසර 30ක සිවිල් යුද්ධය අවසන් වීම"
-      },
-      {
-        id: 10,
-        content: "කොවිඩ්-19 පළමු රැල්ල",
-        start: "2020-03-11",
-        description: "ශ්‍රී ලංකාවේ පළමු කොවිඩ්-19 රෝගියා හඳුනාගැනීම"
+        content: "සිරිමාවෝ බණ්ඩාරනායක අගමැති පත්වීම",
+        start: "1960-07-21",
+        description: "ලෝකයේ ප්‍රථම කාන්තා අගමැතිනිය ලෙස පත්වීම",
+        category: "political"
       }
-    ]);
+    ];
 
-    let selectedEventId = null;
+    // Create a vis DataSet from timelineData
+    let items = new vis.DataSet(timelineData);
 
-    const options = {
-      min: new Date('1945-01-01'),
-      max: new Date('2025-01-01'),
-      locale: 'si-LK',
-      editable: false,
-      zoomMin: 1000 * 60 * 60 * 24 * 30,
-      zoomMax: 1000 * 60 * 60 * 24 * 365 * 5,
-      orientation: {
-        axis: 'bottom',
-        item: 'top'
-      },
-      margin: {
-        item: 20,
-        axis: 40
+    // Create Timeline Instance
+    const timeline = new vis.Timeline(
+      document.getElementById('timeline'),
+      items,
+      {
+        min: formatToISODate(new Date('1945-01-01')),
+        max: formatToISODate(new Date('2025-01-01')),
+        locale: 'si-LK',
+        zoomMin: 1000 * 60 * 60 * 24 * 30,  // One month
+        zoomMax: 1000 * 60 * 60 * 24 * 365 * 5,  // Five years
+        height: '400px'
       }
+    );
+
+    // Setup Fuse.js for advanced fuzzy search
+    const fuseOptions = {
+      keys: ['content', 'description'],
+      threshold: 0.3, // Adjust threshold as needed for fuzzy matching
+      includeScore: true
     };
+    let fuse = new Fuse(timelineData, fuseOptions);
 
-    const container = document.getElementById('timeline');
-    const timeline = new vis.Timeline(container, items, options);
+    // Advanced Filtering Functionality
+    function applyFilters() {
+      const searchTerm = document.getElementById('searchInput').value.trim();
+      const category = document.getElementById('categoryFilter').value;
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
 
-    timeline.on('select', function(properties) {
-      if (properties.items.length > 0) {
-        selectedEventId = properties.items[0];
-        const event = items.get(selectedEventId);
-        openModal(event);
+      let filteredData = timelineData;
+
+      // Use Fuse.js fuzzy search if searchTerm is provided
+      if (searchTerm !== "") {
+        const fuseResults = fuse.search(searchTerm);
+        // fuseResults is an array of objects, each with an "item" property
+        filteredData = fuseResults.map(result => result.item);
       }
-    });
 
-    function openModal(event) {
-      document.getElementById('modalTitle').textContent = event.content;
-      document.getElementById('modalDate').textContent = new Date(event.start).toLocaleDateString('si-LK');
-      document.getElementById('modalDescription').textContent = event.description;
-      document.getElementById('eventModal').style.display = 'block';
+      // Apply category filtering
+      if (category !== "") {
+        filteredData = filteredData.filter(item => item.category === category);
+      }
+
+      // Apply date range filtering
+      if (startDate) {
+        filteredData = filteredData.filter(item => item.start >= startDate);
+      }
+      if (endDate) {
+        filteredData = filteredData.filter(item => item.start <= endDate);
+      }
+
+      // Update vis timeline with filtered items
+      timeline.setItems(new vis.DataSet(filteredData));
+      renderStandardTimeline(filteredData);
     }
 
-    function closeModal() {
-      document.getElementById('eventModal').style.display = 'none';
-      timeline.setSelection([]);
-      selectedEventId = null;
+    // Debounced version of applyFilters for search input
+    const debouncedApplyFilters = debounce(applyFilters, 300);
+
+    // Function to reset search filters and show full timeline data
+    function resetSearchFilters() {
+      document.getElementById('searchInput').value = "";
+      document.getElementById('categoryFilter').selectedIndex = 0;
+      document.getElementById('startDate').value = "";
+      document.getElementById('endDate').value = "";
+      applyFilters();
     }
 
-    function renderStandardTimeline() {
-      const timelineContainer = document.getElementById('standardTimeline');
-      timelineContainer.innerHTML = '';
-      let eventsArray = items.get();
-      eventsArray.sort((a, b) => new Date(a.start) - new Date(b.start));
-      eventsArray.forEach(event => {
-        const li = document.createElement('li');
-        li.textContent = new Date(event.start).toLocaleDateString('si-LK') + ' - ' + event.content;
-        li.onclick = function() {
-          selectedEventId = event.id;
-          openModal(event);
-        };
-        timelineContainer.appendChild(li);
+    // Timeline Control Functions
+    function zoomIn() {
+      const currentWindow = timeline.getWindow();
+      const duration = currentWindow.end - currentWindow.start;
+      timeline.setWindow({
+        start: new Date(currentWindow.start.getTime() + duration/4),
+        end: new Date(currentWindow.end.getTime() - duration/4)
       });
     }
 
-    window.onload = renderStandardTimeline;
-
-    window.onclick = function(event) {
-      const modal = document.getElementById('eventModal');
-      if (event.target == modal) {
-        closeModal();
-      }
+    function zoomOut() {
+      const currentWindow = timeline.getWindow();
+      const duration = currentWindow.end - currentWindow.start;
+      timeline.setWindow({
+        start: new Date(currentWindow.start.getTime() - duration/2),
+        end: new Date(currentWindow.end.getTime() + duration/2)
+      });
     }
 
-    document.addEventListener('keydown', function(e) {
-      const windowRange = timeline.getWindow();
-      const currentCenter = (windowRange.start.getTime() + windowRange.end.getTime()) / 2;
-      const interval = windowRange.end.getTime() - windowRange.start.getTime();
-      const shift = interval * 0.1;
+    function resetView() {
+      timeline.setWindow({
+        start: new Date('1945-01-01'),
+        end: new Date('2025-01-01')
+      });
+    }
+
+    // Event Details Modal Functions
+    function showEventDetails(eventId) {
+      const event = items.get(eventId);
+      if (!event) return;
+
+      document.getElementById('modalTitle').textContent = event.content;
+      document.getElementById('modalDate').textContent = formatDateForDisplay(event.start);
+      document.getElementById('modalDescription').textContent = event.description || 'විස්තරයක් නොමැත';
+      document.getElementById('modalCategory').textContent = `කාණ්ඩය: ${event.category || 'නොදන්නා'}`;
+
+      document.getElementById('modalOverlay').style.display = 'block';
+      document.getElementById('eventModal').style.display = 'block';
+    }
+
+    function closeEventDetails() {
+      document.getElementById('modalOverlay').style.display = 'none';
+      document.getElementById('eventModal').style.display = 'none';
+    }
+
+    // Event List Rendering
+    function renderStandardTimeline(filteredItems = null) {
+      const list = document.getElementById('standardTimeline');
+      const itemsToRender = filteredItems || timelineData;
       
-      if (e.key === 'ArrowLeft') {
-        timeline.moveTo(new Date(currentCenter - shift), {animation: true});
-      } else if (e.key === 'ArrowRight') {
-        timeline.moveTo(new Date(currentCenter + shift), {animation: true});
+      list.innerHTML = itemsToRender
+        .sort((a, b) => new Date(a.start) - new Date(b.start))
+        .map(event => `
+          <li onclick="timeline.setSelection([${event.id}])">
+            ${formatDateForDisplay(event.start)} - ${event.content}
+            ${event.category ? `<small>[${event.category}]</small>` : ''}
+          </li>
+        `).join('');
+    }
+
+    // Event Listeners
+    document.getElementById('searchInput').addEventListener('input', debouncedApplyFilters);
+    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+    document.getElementById('startDate').addEventListener('change', applyFilters);
+    document.getElementById('endDate').addEventListener('change', applyFilters);
+    
+    timeline.on('select', function(properties) {
+      if (properties.items && properties.items.length) {
+        showEventDetails(properties.items[0]);
       }
     });
+
+    document.getElementById('modalOverlay').addEventListener('click', closeEventDetails);
+
+    // Initialize View on window load
+    window.onload = () => {
+      renderStandardTimeline();
+    };
   </script>
 </body>
 </html>
