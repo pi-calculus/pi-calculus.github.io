@@ -255,7 +255,8 @@
     <!-- Event List -->
     <div id="standardTimelineContainer">
       <h2>සම්මත සිදුවීම්</h2>
-      <ul id="standardTimeline"></ul>
+      <!-- Modified to use ordered list for numbering -->
+      <ol id="standardTimeline"></ol>
     </div>
   </div>
 
@@ -403,8 +404,8 @@
       const currentWindow = timeline.getWindow();
       const duration = currentWindow.end - currentWindow.start;
       timeline.setWindow({
-        start: new Date(currentWindow.start.getTime() + duration/4),
-        end: new Date(currentWindow.end.getTime() - duration/4)
+        start: new Date(currentWindow.start.getTime() + duration / 4),
+        end: new Date(currentWindow.end.getTime() - duration / 4)
       });
     }
 
@@ -412,8 +413,8 @@
       const currentWindow = timeline.getWindow();
       const duration = currentWindow.end - currentWindow.start;
       timeline.setWindow({
-        start: new Date(currentWindow.start.getTime() - duration/2),
-        end: new Date(currentWindow.end.getTime() + duration/2)
+        start: new Date(currentWindow.start.getTime() - duration / 2),
+        end: new Date(currentWindow.end.getTime() + duration / 2)
       });
     }
 
