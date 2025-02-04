@@ -31,6 +31,15 @@
       --card-bg: #2d2d2d;
     }
 
+    [data-theme="high-contrast"] {
+      --primary: #000000;
+      --secondary: #ff0000;
+      --accent: #ffff00;
+      --background: #ffffff;
+      --text: #000000;
+      --card-bg: #ffffff;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -200,15 +209,36 @@
       padding-left: 0;
     }
 
+    /* Style the list marker (numbering) */
+    .standard-timeline ol li::marker {
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* Style for list items and their hover effect */
     .standard-timeline li {
       margin-bottom: 0.75rem;
       cursor: pointer;
       padding: 0.5rem;
       border-bottom: 1px solid rgba(42, 92, 130, 0.1);
+      transition: background 0.3s ease;
     }
 
     .standard-timeline li:hover {
       background: rgba(42, 92, 130, 0.05);
+    }
+
+    /* Custom spans for different parts in each list item */
+    .timeline-dates {
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .timeline-start, .timeline-end {
+      /* You can adjust these colors if needed */
+    }
+    .timeline-content {
+      color: var(--text);
+      font-weight: 500;
     }
 
     /* Modal for Event Details */
@@ -236,6 +266,7 @@
       z-index: 1000;
       max-width: 600px;
       width: 90%;
+      transition: opacity 0.3s ease;
     }
 
     .modal-header {
@@ -262,9 +293,20 @@
 
     .modal-description {
       line-height: 1.6;
-      color: rgba(var(--text), 0.8);
+      color: rgba(45, 52, 54, 0.8);
     }
 
+    /* Custom Styling for Timeline Events */
+    /* Normal events */
+    .vis-item:not(.range-event) .vis-item-content {
+      background-color: var(--primary);
+      color: white;
+    }
+    /* Range events */
+    .vis-item.range-event .vis-item-content {
+      background-color: #90EE90 !important;
+      color: black;
+    }
     /* Responsive Adjustments */
     @media (max-width: 768px) {
       .container {
@@ -297,11 +339,12 @@
           <option value="cultural">Cultural</option>
           <option value="economic">Economic</option>
           <option value="president">President</option>
+          <option value="prime minister">Prime minister</option>
         </select>
         <input type="date" id="startDate" placeholder="Start Date" />
         <input type="date" id="endDate" placeholder="End Date" />
       </div>
-      <button class="reset-search-button" onclick="resetSearchFilters()">
+      <button class="reset-search-button" id="resetFilters">
         <i class="fas fa-undo"></i>
         Reset Filters
       </button>
@@ -309,20 +352,20 @@
 
     <!-- Timeline Controls -->
     <div class="timeline-controls">
-      <button class="control-button" onclick="zoomIn()">
+      <button class="control-button" id="zoomIn">
         <i class="fas fa-search-plus"></i>
         Zoom In
       </button>
-      <button class="control-button" onclick="zoomOut()">
+      <button class="control-button" id="zoomOut">
         <i class="fas fa-search-minus"></i>
         Zoom Out
       </button>
-      <button class="control-button" onclick="resetView()">
+      <button class="control-button" id="resetView">
         <i class="fas fa-expand"></i>
         Reset View
       </button>
       <!-- Fullscreen Toggle Button -->
-      <button class="control-button" id="fullscreenToggle" onclick="toggleFullScreen()">
+      <button class="control-button" id="fullscreenToggle">
         <i class="fas fa-arrows-alt"></i>
         Fullscreen
       </button>
@@ -343,7 +386,7 @@
   <div class="event-details-modal" id="eventModal">
     <div class="modal-header">
       <h2 class="modal-title" id="modalTitle"></h2>
-      <span class="close-modal" onclick="closeEventDetails()">&times;</span>
+      <span class="close-modal" id="closeModal">&times;</span>
     </div>
     <p class="modal-date" id="modalDate"></p>
     <p class="modal-description" id="modalDescription"></p>
@@ -356,335 +399,474 @@
   </button>
 
   <script>
-    // Helper Functions
-    function formatToISODate(date) {
-      return date instanceof Date 
-        ? date.toISOString().split('T')[0]
-        : new Date(date).toISOString().split('T')[0];
-    }
+    (function() {
+      'use strict';
 
-    // Use the original ISO string for display in the timeline list
-    function formatDateForListDisplay(isoDate) {
-      return isoDate;
-    }
-
-    function debounce(func, wait) {
-      let timeout;
-      return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
+      // Utility Functions
+      const debounce = (func, wait) => {
+        let timeout;
+        return (...args) => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => func.apply(this, args), wait);
+        };
       };
-    }
 
-    // Sample Timeline Data (or retrieve from localStorage)
-    // Updated events to include multiple categories via the "categories" property.
-    let timelineData = JSON.parse(localStorage.getItem('timelineEvents')) || [
-      {
-        id: 1,
-        content: "Independence of Sri Lanka",
-        start: "1948-02-04",
-        description: "Sri Lanka gains independence from the British Empire.",
-        categories: ["political"]
-      },
-      {
-        id: 2,
-        content: "First Republican Constitution",
-        start: "1972-05-22",
-        description: "Sri Lanka becomes a republic and introduces a new constitution.",
-        categories: ["political"]
-      },
-      {
-        id: 3,
-        content: "D.S. Senanayake",
-        start: "1947-09-24",
-        description: "D.S. Senanayake is appointed as the first Prime Minister of Sri Lanka.",
-        categories: ["political"]
-      },
-      {
-        id: 4,
-        content: "Sirimavo Bandaranaike",
-        start: "1960-07-21",
-        description: "Appointment of the world’s first female Prime Minister.",
-        categories: ["political"]
-      },
-      {
-        id: 5,
-        content: "Dingiri Bandara Wijetunga",
-        start: "1993-05-01",
-        description: "Dingiri Banda Wijetunga, known as 'DB', served as President and Prime Minister.",
-        categories: ["political", "president"]
-      },
-      {
-        id: 6,
-        content: "Chandrika Kumaratunga",
-        start: "1994-11-12",
-        description: "",
-        categories: ["political", "president"]
-      },
-      {
-        id: 7,
-        content: "Mahinda Rajapaksa",
-        start: "2005-11-19",
-        description: "",
-        categories: ["political", "president"]
-      },
-      {
-        id: 8,
-        content: "Maithripala Sirisena",
-        start: "2015-01-09",
-        description: "",
-        categories: ["political", "president"]
-      },
-      {
-        id: 9,
-        content: "Gotabaya Rajapaksa",
-        start: "2019-11-18",
-        description: "",
-        categories: ["political", "president"]
-      },
-      {
-        id: 10,
-        content: "Ranil Wickremesinghe",
-        start: "2022-07-14",
-        description: "",
-        categories: ["political", "president"]
-      },
-      {
-        id: 11,
-        content: "Anura Kumara Dissanayake",
-        start: "2024-09-23",
-        description: "",
-        categories: ["political", "president"]
-      },
-      {
-        id: 12,
-        content: "J.R. Jayawardena",
-        start: "1978-04-04",
-        description: "",
-        categories: ["political", "president"]
-      },
-      {
-        id: 13,
-        content: "Ranasinghe Premadasa",
-        start: "1989-01-02",
-        description: "",
-        categories: ["political", "president"]
+      const formatToISODate = date => (new Date(date)).toISOString().split('T')[0];
+
+      // Load timeline data with error handling
+      let timelineData = [];
+      try {
+        const storedData = localStorage.getItem('timelineEvents');
+        timelineData = storedData ? JSON.parse(storedData) : [];
+      } catch (error) {
+        console.error("Error parsing localStorage timelineEvents:", error);
       }
-    ];
 
-    // Initialize vis DataSet and Timeline
-    let items = new vis.DataSet(timelineData);
-    const timeline = new vis.Timeline(
-      document.getElementById('timeline'),
-      items,
-      {
-        min: formatToISODate(new Date('1945-01-01')),
-        max: formatToISODate(new Date('2025-01-01')),
+      // If no stored data, use default data
+      if (!timelineData.length) {
+        timelineData = [
+          {
+            id: 1,
+            content: "Independence of Sri Lanka",
+            start: "1948-02-04",
+            description: "Sri Lanka gains independence from the British Empire.",
+            categories: ["political"]
+          },
+          {
+            id: 2,
+            content: "First Republican Constitution",
+            start: "1972-05-22",
+            description: "Sri Lanka becomes a republic and introduces a new constitution.",
+            categories: ["political"]
+          },
+          {
+            id: 3,
+            content: "D.S. Senanayake",
+            start: "1947-09-24",
+            end: "1952-03-22",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },
+          {
+            id: 4,
+            content: "Sirimavo Bandaranaike",
+            start: "1960-07-21",
+            end: "1965-03-25",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },
+          {
+            id: 5,
+            content: "Dingiri Bandara Wijetunga",
+            start: "1993-05-01",
+            end: "1994-11-12",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 6,
+            content: "Chandrika Kumaratunga",
+            start: "1994-11-12",
+            end: "2005-11-19",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 7,
+            content: "Mahinda Rajapaksa",
+            start: "2005-11-19",
+            end: "2015-01-09",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 8,
+            content: "Maithripala Sirisena",
+            start: "2015-01-09",
+            end: "2019-11-18",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 9,
+            content: "Gotabaya Rajapaksa",
+            start: "2019-11-18",
+            end: "2022-07-14",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 10,
+            content: "Ranil Wickremesinghe",
+            start: "2022-07-14",
+            end: "2024-09-23",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 11,
+            content: "Anura Kumara Dissanayake",
+            start: "2024-09-23",
+            end: "2025-01-01",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 12,
+            content: "J.R. Jayawardena",
+            start: "1978-02-04",
+            end: "1989-01-02",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 13,
+            content: "Ranasinghe Premadasa",
+            start: "1989-01-02",
+            end: "1993-05-01",
+            description: "",
+            categories: ["political", "president"],
+            className: "range-event"
+          },
+          {
+            id: 14,
+            content: "Dudley Senanayake",
+            start: "1952-03-26",
+            end: "1953-10-12",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },{
+            id: 15,
+            content: "Sir John Kotelawala",
+            start: "1953-10-12",
+            end: "1956-04-12",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },{
+            id: 16,
+            content: "S. W. R. D. Bandaranaike",
+            start: "1956-04-12",
+            end: "1959-09-26",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },{
+            id: 17,
+            content: "Wijeyananda Dahanayake",
+            start: "1959-09-26",
+            end: "1960-03-20",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },{
+            id: 18,
+            content: "2nd Dudley Senanayake",
+            start: "1960-03-21",
+            end: "1960-07-21",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },{
+            id: 19,
+            content: "2nd Sirimavo Bandaranaike",
+            start: "1970-05-29",
+            end: "1977-07-23",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },{
+            id: 20,
+            content: "3rd Dudley Senanayake",
+            start: "1965-03-25",
+            end: "1970-05-29",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },{
+            id: 21,
+            content: "PM J.R. Jayawardena",
+            start: "1977-07-23",
+            end: "1978-02-04",
+            description: "",
+            categories: ["political", "prime minister"],
+            className: "range-event"
+          },
+          {
+            id: 22,
+            content: "Sri Lankan Civil War",
+            start: "1983-07-23",
+            end: "2009-05-19",
+            description: "A prolonged armed conflict in Sri Lanka.",
+            categories: ["political"],
+            className: "range-event"
+          }
+        ];
+      }
+
+      // Save timelineData to localStorage for persistence
+      localStorage.setItem('timelineEvents', JSON.stringify(timelineData));
+
+      // Initialize vis DataSet and Timeline
+      const items = new vis.DataSet(timelineData);
+      const timeline = new vis.Timeline(document.getElementById('timeline'), items, {
+        start: new Date('1945-01-01'),
+        end: new Date('2025-01-01'),
+        min: new Date('1945-01-01'),
+        max: new Date('2025-01-01'),
         locale: 'en-US',
         zoomMin: 1000 * 60 * 60 * 24 * 30,
         zoomMax: 1000 * 60 * 60 * 24 * 365 * 5,
         height: '500px'
-      }
-    );
+      });
 
-    // Fuse.js Setup for Fuzzy Searching
-    const fuseOptions = {
-      keys: ['content', 'description'],
-      threshold: 0.3,
-      includeScore: true
-    };
-    let fuse = new Fuse(timelineData, fuseOptions);
+      // Fuse.js Setup for Fuzzy Searching
+      const fuseOptions = {
+        keys: ['content', 'description'],
+        threshold: 0.3,
+        includeScore: true
+      };
+      let fuse = new Fuse(timelineData, fuseOptions);
 
-    // Filter and Search Functionality
-    function applyFilters() {
-      const searchTerm = document.getElementById('searchInput').value.trim();
-      const category = document.getElementById('categoryFilter').value;
-      const startDate = document.getElementById('startDate').value;
-      const endDate = document.getElementById('endDate').value;
+      // Filter and Search Functionality
+      const applyFilters = () => {
+        let filteredData = timelineData;
+        const searchTerm = document.getElementById('searchInput').value.trim();
+        const category = document.getElementById('categoryFilter').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
 
-      let filteredData = timelineData;
+        if (searchTerm !== "") {
+          const fuseResults = fuse.search(searchTerm);
+          filteredData = fuseResults.map(result => result.item);
+        }
 
-      if (searchTerm !== "") {
-        const fuseResults = fuse.search(searchTerm);
-        filteredData = fuseResults.map(result => result.item);
-      }
+        if (category !== "") {
+          filteredData = filteredData.filter(item => {
+            if (item.categories && Array.isArray(item.categories)) {
+              return item.categories.includes(category);
+            }
+            return item.category === category;
+          });
+        }
 
-      if (category !== "") {
-        filteredData = filteredData.filter(item => {
-          // Check if the event has multiple categories or a single category.
-          if (item.categories && Array.isArray(item.categories)) {
-            return item.categories.includes(category);
-          }
-          // Fallback if only a single category exists.
-          return item.category === category;
+        if (startDate) {
+          filteredData = filteredData.filter(item => item.start >= startDate);
+        }
+        if (endDate) {
+          filteredData = filteredData.filter(item => item.start <= endDate);
+        }
+
+        // Update vis DataSet and re-render standard timeline
+        timeline.setItems(new vis.DataSet(filteredData));
+        renderStandardTimeline(filteredData);
+      };
+
+      const debouncedApplyFilters = debounce(applyFilters, 300);
+
+      const resetSearchFilters = () => {
+        document.getElementById('searchInput').value = "";
+        document.getElementById('categoryFilter').selectedIndex = 0;
+        document.getElementById('startDate').value = "";
+        document.getElementById('endDate').value = "";
+        applyFilters();
+      };
+
+      // Timeline Zoom and Reset Controls
+      const zoomIn = () => {
+        const currentWindow = timeline.getWindow();
+        const duration = currentWindow.end - currentWindow.start;
+        timeline.setWindow({
+          start: new Date(currentWindow.start.getTime() + duration / 4),
+          end: new Date(currentWindow.end.getTime() - duration / 4)
         });
-      }
+      };
 
-      if (startDate) {
-        filteredData = filteredData.filter(item => item.start >= startDate);
-      }
-      if (endDate) {
-        filteredData = filteredData.filter(item => item.start <= endDate);
-      }
+      const zoomOut = () => {
+        const currentWindow = timeline.getWindow();
+        const duration = currentWindow.end - currentWindow.start;
+        timeline.setWindow({
+          start: new Date(currentWindow.start.getTime() - duration / 2),
+          end: new Date(currentWindow.end.getTime() + duration / 2)
+        });
+      };
 
-      // Update timeline items in a single call to improve performance.
-      timeline.setItems(new vis.DataSet(filteredData));
-      renderStandardTimeline(filteredData);
-    }
+      const resetView = () => {
+        timeline.setWindow({
+          start: new Date('1945-01-01'),
+          end: new Date('2025-01-01')
+        });
+      };
 
-    const debouncedApplyFilters = debounce(applyFilters, 300);
+      // Increased arrow key movement with full duration shift
+      const moveTimeline = direction => {
+        const currentWindow = timeline.getWindow();
+        const duration = currentWindow.end - currentWindow.start;
+        const shift = duration; // full duration shift
+        timeline.setWindow(new Date(currentWindow.start.getTime() + direction * shift),
+                           new Date(currentWindow.end.getTime() + direction * shift));
+      };
 
-    function resetSearchFilters() {
-      document.getElementById('searchInput').value = "";
-      document.getElementById('categoryFilter').selectedIndex = 0;
-      document.getElementById('startDate').value = "";
-      document.getElementById('endDate').value = "";
-      applyFilters();
-    }
-
-    // Timeline Zoom and Reset Controls
-    function zoomIn() {
-      const currentWindow = timeline.getWindow();
-      const duration = currentWindow.end - currentWindow.start;
-      timeline.setWindow({
-        start: new Date(currentWindow.start.getTime() + duration / 4),
-        end: new Date(currentWindow.end.getTime() - duration / 4)
-      });
-    }
-
-    function zoomOut() {
-      const currentWindow = timeline.getWindow();
-      const duration = currentWindow.end - currentWindow.start;
-      timeline.setWindow({
-        start: new Date(currentWindow.start.getTime() - duration / 2),
-        end: new Date(currentWindow.end.getTime() + duration / 2)
-      });
-    }
-
-    function resetView() {
-      timeline.setWindow({
-        start: new Date('1945-01-01'),
-        end: new Date('2025-01-01')
-      });
-    }
-
-    // New Functionality: Move Timeline using Left/Right Arrow Keys (faster shift: 30% of view)
-    function moveTimeline(direction) {
-      // direction: -1 for left, +1 for right
-      const currentWindow = timeline.getWindow();
-      const duration = currentWindow.end - currentWindow.start;
-      const shift = duration * 0.3; // shift by 30% of current view
-      const newStart = new Date(currentWindow.start.getTime() + direction * shift);
-      const newEnd = new Date(currentWindow.end.getTime() + direction * shift);
-      timeline.setWindow(newStart, newEnd);
-    }
-
-    // Listen for Arrow Key Presses (only when focus is not in an input)
-    document.addEventListener('keydown', function(e) {
-      if (document.activeElement.tagName === "INPUT") return;
-      if (e.key === 'ArrowLeft') {
-        moveTimeline(-1);
-      } else if (e.key === 'ArrowRight') {
-        moveTimeline(1);
-      }
-    });
-
-    // New Functionality: Toggle Full Screen for Timeline Container
-    function toggleFullScreen() {
-      const timelineElement = document.getElementById('timeline');
-      // Check if already in fullscreen mode
-      if (!document.fullscreenElement) {
-        if (timelineElement.requestFullscreen) {
-          timelineElement.requestFullscreen();
-        } else if (timelineElement.webkitRequestFullscreen) { /* Safari */
-          timelineElement.webkitRequestFullscreen();
-        } else if (timelineElement.msRequestFullscreen) { /* IE11 */
-          timelineElement.msRequestFullscreen();
+      document.addEventListener('keydown', e => {
+        if (document.activeElement.tagName === "INPUT") return;
+        if (e.key === 'ArrowLeft') {
+          moveTimeline(-1);
+        } else if (e.key === 'ArrowRight') {
+          moveTimeline(1);
         }
-        document.getElementById('fullscreenToggle').innerHTML = `<i class="fas fa-compress"></i> Exit Fullscreen`;
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) { /* Safari */
-          document.webkitExitFullscreen();
-        } else if (document.msExitFullscreen) { /* IE11 */
-          document.msExitFullscreen();
+      });
+
+      // Fullscreen Toggle Functionality with resetting view
+      const toggleFullScreen = () => {
+        const timelineElement = document.getElementById('timeline');
+        if (!document.fullscreenElement) {
+          if (timelineElement.requestFullscreen) {
+            timelineElement.requestFullscreen();
+          } else if (timelineElement.webkitRequestFullscreen) {
+            timelineElement.webkitRequestFullscreen();
+          } else if (timelineElement.msRequestFullscreen) {
+            timelineElement.msRequestFullscreen();
+          }
+          timeline.setWindow(new Date('1945-01-01'), new Date('2025-01-01'));
+          document.getElementById('fullscreenToggle').innerHTML = `<i class="fas fa-compress"></i> Exit Fullscreen`;
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
+          document.getElementById('fullscreenToggle').innerHTML = `<i class="fas fa-arrows-alt"></i> Fullscreen`;
         }
-        document.getElementById('fullscreenToggle').innerHTML = `<i class="fas fa-arrows-alt"></i> Fullscreen`;
-      }
-    }
+      };
 
-    // Event Details Modal Functionality
-    function showEventDetails(eventId) {
-      const event = items.get(eventId);
-      if (!event) return;
+      // Event Details Modal Functionality
+      const showEventDetails = eventId => {
+        const event = items.get(eventId);
+        if (!event) return;
+        document.getElementById('modalTitle').textContent = event.content;
+        document.getElementById('modalDate').textContent = event.start + (event.end ? " to " + event.end : "");
+        document.getElementById('modalDescription').textContent = event.description || 'No description available';
+        if (event.categories && Array.isArray(event.categories)) {
+          document.getElementById('modalCategory').innerHTML = `<strong>Categories:</strong> <em style="color:orange;">[${event.categories.join(', ')}]</em>`;
+        } else if (event.category) {
+          document.getElementById('modalCategory').innerHTML = `<strong>Category:</strong> <em style="color:orange;">[${event.category}]</em>`;
+        } else {
+          document.getElementById('modalCategory').textContent = '';
+        }
+        document.getElementById('modalOverlay').style.display = 'block';
+        document.getElementById('eventModal').style.display = 'block';
+      };
 
-      document.getElementById('modalTitle').textContent = event.content;
-      document.getElementById('modalDate').textContent = event.start;
-      document.getElementById('modalDescription').textContent = event.description || 'No description available';
+      const closeEventDetails = () => {
+        document.getElementById('modalOverlay').style.display = 'none';
+        document.getElementById('eventModal').style.display = 'none';
+      };
 
-      // Display categories in the modal if available
-      if (event.categories && Array.isArray(event.categories)) {
-        document.getElementById('modalCategory').innerHTML = `<strong>Categories:</strong> <em style="color:orange;">[${event.categories.join(', ')}]</em>`;
-      } else if (event.category) {
-        document.getElementById('modalCategory').innerHTML = `<strong>Category:</strong> <em style="color:orange;">[${event.category}]</em>`;
-      } else {
-        document.getElementById('modalCategory').textContent = '';
-      }
-
-      document.getElementById('modalOverlay').style.display = 'block';
-      document.getElementById('eventModal').style.display = 'block';
-    }
-
-    function closeEventDetails() {
-      document.getElementById('modalOverlay').style.display = 'none';
-      document.getElementById('eventModal').style.display = 'none';
-    }
-
-    // Render the Standard Timeline as an Ordered List with ISO Date, clickable items, and categories (styled)
-    function renderStandardTimeline(filteredItems = null) {
-      const list = document.getElementById('standardTimeline');
-      const itemsToRender = filteredItems || timelineData;
-      
-      list.innerHTML = itemsToRender
-        .sort((a, b) => new Date(a.start) - new Date(b.start))
-        .map(event => {
-          // If event.categories exists, join them with commas and style the text.
+      // Render Standard Timeline as an Ordered List with Event Delegation
+      const renderStandardTimeline = (filteredItems = null) => {
+        const list = document.getElementById('standardTimeline');
+        const itemsToRender = filteredItems || timelineData;
+        // Sort by start date ascending
+        const sortedItems = itemsToRender.sort((a, b) => new Date(a.start) - new Date(b.start));
+        list.innerHTML = sortedItems.map(event => {
           const categoriesText = event.categories && Array.isArray(event.categories) && event.categories.length
-            ? `<small style="color:orange; font-style:italic;">[${event.categories.join(', ')}]</small>`
-            : (event.category ? `<small style="color:orange; font-style:italic;">[${event.category}]</small>` : '');
-          return `<li onclick="showEventDetails(${event.id})">
-                    ${formatDateForListDisplay(event.start)} - ${event.content} ${categoriesText}
+            ? `<small style="color:orange; font-style:italic;"> [${event.categories.join(', ')}]</small>`
+            : (event.category ? `<small style="color:orange; font-style:italic;"> [${event.category}]</small>` : '');
+          const datePart = event.end 
+            ? `<span class="timeline-dates"><span class="timeline-start">${formatToISODate(event.start)}</span><span class="timeline-end"> - ${formatToISODate(event.end)}</span></span>` 
+            : `<span class="timeline-dates"><span class="timeline-start">${formatToISODate(event.start)}</span></span>`;
+          return `<li data-id="${event.id}">
+                    ${datePart} - <span class="timeline-content">${event.content}</span>
+                    ${categoriesText}
                   </li>`;
         }).join('');
-    }
+      };
 
-    // Attach Event Listeners for Search and Filter Inputs
-    document.getElementById('searchInput').addEventListener('input', debouncedApplyFilters);
-    document.getElementById('categoryFilter').addEventListener('change', applyFilters);
-    document.getElementById('startDate').addEventListener('change', applyFilters);
-    document.getElementById('endDate').addEventListener('change', applyFilters);
+      // Add event delegation for standard timeline list clicks
+      document.getElementById('standardTimeline').addEventListener('click', e => {
+        const li = e.target.closest('li');
+        if (li && li.dataset.id) {
+          showEventDetails(parseInt(li.dataset.id, 10));
+        }
+      });
 
-    timeline.on('select', function(properties) {
-      if (properties.items && properties.items.length) {
-        showEventDetails(properties.items[0]);
-      }
-    });
+      // Theme Toggle & Persistence (supports light, dark, high-contrast)
+      let currentTheme = localStorage.getItem('theme') || '';
+      const applyTheme = theme => {
+        if (theme) {
+          document.body.setAttribute('data-theme', theme);
+        } else {
+          document.body.removeAttribute('data-theme');
+        }
+        localStorage.setItem('theme', theme);
+        // Update toggle button icon accordingly
+        const themeToggleBtn = document.getElementById('themeToggle');
+        if (theme === 'dark') {
+          themeToggleBtn.innerHTML = `<i class="fas fa-sun"></i>`;
+        } else if (theme === 'high-contrast') {
+          themeToggleBtn.innerHTML = `<i class="fas fa-adjust"></i>`;
+        } else {
+          themeToggleBtn.innerHTML = `<i class="fas fa-moon"></i>`;
+        }
+      };
 
-    document.getElementById('modalOverlay').addEventListener('click', closeEventDetails);
+      // Cycle through themes on toggle click: light -> dark -> high-contrast -> light...
+      const cycleTheme = () => {
+        if (!currentTheme) {
+          currentTheme = 'dark';
+        } else if (currentTheme === 'dark') {
+          currentTheme = 'high-contrast';
+        } else {
+          currentTheme = '';
+        }
+        applyTheme(currentTheme);
+      };
 
-    // Theme Toggle Functionality
-    let isDark = false;
-    document.getElementById('themeToggle').addEventListener('click', () => {
-      isDark = !isDark;
-      document.body.setAttribute('data-theme', isDark ? 'dark' : '');
-      document.getElementById('themeToggle').innerHTML = `<i class="fas ${isDark ? 'fa-sun' : 'fa-moon'}"></i>`;
-    });
+      // Event Listeners Setup
+      const setupEventListeners = () => {
+        document.getElementById('searchInput').addEventListener('input', debouncedApplyFilters);
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        document.getElementById('startDate').addEventListener('change', applyFilters);
+        document.getElementById('endDate').addEventListener('change', applyFilters);
+        document.getElementById('resetFilters').addEventListener('click', resetSearchFilters);
+        document.getElementById('zoomIn').addEventListener('click', zoomIn);
+        document.getElementById('zoomOut').addEventListener('click', zoomOut);
+        document.getElementById('resetView').addEventListener('click', resetView);
+        document.getElementById('fullscreenToggle').addEventListener('click', toggleFullScreen);
+        document.getElementById('modalOverlay').addEventListener('click', closeEventDetails);
+        document.getElementById('closeModal').addEventListener('click', closeEventDetails);
+        document.getElementById('themeToggle').addEventListener('click', cycleTheme);
+      };
 
-    // Initial Render of Standard Timeline
-    window.onload = () => {
-      renderStandardTimeline();
-    };
+      // Timeline item selection event (from vis-timeline)
+      timeline.on('select', properties => {
+        if (properties.items && properties.items.length) {
+          showEventDetails(properties.items[0]);
+        }
+      });
+
+      // Initialization
+      const init = () => {
+        applyTheme(currentTheme);
+        renderStandardTimeline();
+        setupEventListeners();
+      };
+
+      window.onload = init;
+    })();
   </script>
 </body>
 </html>
