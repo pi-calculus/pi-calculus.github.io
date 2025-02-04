@@ -186,10 +186,10 @@
 
     /* Timeline Container */
     #timeline {
-      height: 500px;
+      height: 600px;
       border-radius: 1rem;
       overflow: hidden;
-      border: 2px solid rgba(42, 92, 130, 0.1);
+      border: 5px solid rgba(4, 43, 73, 0.1);
       background: var(--card-bg);
     }
 
@@ -323,7 +323,9 @@
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>Sri Lankan History Timeline</h1>
+      <h1>Sri Lanka After Independence</h1>
+      <h2>නිදහසින් පසු ශ්‍රී ලංකාව</h2>
+      <h2>சுதந்திரத்திற்குப் பின் இலங்கை</h2>
     </div>
 
     <!-- Search and Filter Section -->
@@ -340,6 +342,9 @@
           <option value="economic">Economic</option>
           <option value="president">President</option>
           <option value="prime minister">Prime minister</option>
+          <option value="sports">Sports</option>
+          <option value="cricket">Cricket</option>
+          <option value="natural disaster">Natural disaster</option>
         </select>
         <input type="date" id="startDate" placeholder="Start Date" />
         <input type="date" id="endDate" placeholder="End Date" />
@@ -546,7 +551,8 @@
             description: "",
             categories: ["political", "prime minister"],
             className: "range-event"
-          },{
+          },
+          {
             id: 15,
             content: "Sir John Kotelawala",
             start: "1953-10-12",
@@ -554,7 +560,8 @@
             description: "",
             categories: ["political", "prime minister"],
             className: "range-event"
-          },{
+          },
+          {
             id: 16,
             content: "S. W. R. D. Bandaranaike",
             start: "1956-04-12",
@@ -562,7 +569,8 @@
             description: "",
             categories: ["political", "prime minister"],
             className: "range-event"
-          },{
+          },
+          {
             id: 17,
             content: "Wijeyananda Dahanayake",
             start: "1959-09-26",
@@ -570,7 +578,8 @@
             description: "",
             categories: ["political", "prime minister"],
             className: "range-event"
-          },{
+          },
+          {
             id: 18,
             content: "2nd Dudley Senanayake",
             start: "1960-03-21",
@@ -578,7 +587,8 @@
             description: "",
             categories: ["political", "prime minister"],
             className: "range-event"
-          },{
+          },
+          {
             id: 19,
             content: "2nd Sirimavo Bandaranaike",
             start: "1970-05-29",
@@ -586,7 +596,8 @@
             description: "",
             categories: ["political", "prime minister"],
             className: "range-event"
-          },{
+          },
+          {
             id: 20,
             content: "3rd Dudley Senanayake",
             start: "1965-03-25",
@@ -594,7 +605,8 @@
             description: "",
             categories: ["political", "prime minister"],
             className: "range-event"
-          },{
+          },
+          {
             id: 21,
             content: "PM J.R. Jayawardena",
             start: "1977-07-23",
@@ -611,6 +623,62 @@
             description: "A prolonged armed conflict in Sri Lanka.",
             categories: ["political"],
             className: "range-event"
+          },
+          {
+            id: 23,
+            content: "Susanthika Jayasinghe",
+            start: "2000-09-28",
+            description: "",
+            categories: ["sports"]
+          },
+          {
+            id: 24,
+            content: "Duncan White",
+            start: "1948-07-30",
+            description: "",
+            categories: ["sports"]
+          },
+          {
+            id: 25,
+            content: "Tsunami",
+            start: "2004-12-26",
+            description: "",
+            categories: ["natural disaster"]
+          },
+          {
+            id: 26,
+            content: "Easter bombings",
+            start: "2019-04-21",
+            description: "",
+            categories: [""]
+          },
+          {
+            id: 27,
+            content: "Test status",
+            start: "1981-07-21",
+            description: "",
+            categories: ["sports", "cricket"]
+          },
+          {
+            id: 28,
+            content: "Cricket World Cup",
+            start: "1996-03-17",
+            description: "",
+            categories: ["sports", "cricket"]
+          },
+          {
+            id: 29,
+            content: "T20 World Cup",
+            start: "2014-04-06",
+            description: "",
+            categories: ["sports", "cricket"]
+          },
+          {
+            id: 30,
+            content: "COVID-19 start",
+            start: "2020-01-27",
+            description: "",
+            categories: [""]
           }
         ];
       }
@@ -622,13 +690,13 @@
       const items = new vis.DataSet(timelineData);
       const timeline = new vis.Timeline(document.getElementById('timeline'), items, {
         start: new Date('1945-01-01'),
-        end: new Date('2025-01-01'),
+        end: new Date('2100-01-01'),
         min: new Date('1945-01-01'),
-        max: new Date('2025-01-01'),
+        max: new Date('2100-01-01'),
         locale: 'en-US',
         zoomMin: 1000 * 60 * 60 * 24 * 30,
-        zoomMax: 1000 * 60 * 60 * 24 * 365 * 5,
-        height: '500px'
+        zoomMax: 1000 * 60 * 60 * 24 * 365 * 5 * 40,
+        height: '600px'
       });
 
       // Fuse.js Setup for Fuzzy Searching
@@ -705,7 +773,7 @@
       const resetView = () => {
         timeline.setWindow({
           start: new Date('1945-01-01'),
-          end: new Date('2025-01-01')
+          end: new Date('2100-01-01')
         });
       };
 
@@ -730,6 +798,7 @@
       // Fullscreen Toggle Functionality with resetting view
       const toggleFullScreen = () => {
         const timelineElement = document.getElementById('timeline');
+        const fullscreenToggleBtn = document.getElementById('fullscreenToggle');
         if (!document.fullscreenElement) {
           if (timelineElement.requestFullscreen) {
             timelineElement.requestFullscreen();
@@ -738,8 +807,8 @@
           } else if (timelineElement.msRequestFullscreen) {
             timelineElement.msRequestFullscreen();
           }
-          timeline.setWindow(new Date('1945-01-01'), new Date('2025-01-01'));
-          document.getElementById('fullscreenToggle').innerHTML = `<i class="fas fa-compress"></i> Exit Fullscreen`;
+          timeline.setWindow(new Date('1945-01-01'), new Date('2100-01-01'));
+          fullscreenToggleBtn.innerHTML = "<i class='fas fa-compress'></i> Exit Fullscreen";
         } else {
           if (document.exitFullscreen) {
             document.exitFullscreen();
@@ -748,7 +817,7 @@
           } else if (document.msExitFullscreen) {
             document.msExitFullscreen();
           }
-          document.getElementById('fullscreenToggle').innerHTML = `<i class="fas fa-arrows-alt"></i> Fullscreen`;
+          fullscreenToggleBtn.innerHTML = "<i class='fas fa-arrows-alt'></i> Fullscreen";
         }
       };
 
@@ -760,9 +829,9 @@
         document.getElementById('modalDate').textContent = event.start + (event.end ? " to " + event.end : "");
         document.getElementById('modalDescription').textContent = event.description || 'No description available';
         if (event.categories && Array.isArray(event.categories)) {
-          document.getElementById('modalCategory').innerHTML = `<strong>Categories:</strong> <em style="color:orange;">[${event.categories.join(', ')}]</em>`;
+          document.getElementById('modalCategory').innerHTML = "<strong>Categories:</strong> <em style='color:orange;'>[" + event.categories.join(', ') + "]</em>";
         } else if (event.category) {
-          document.getElementById('modalCategory').innerHTML = `<strong>Category:</strong> <em style="color:orange;">[${event.category}]</em>`;
+          document.getElementById('modalCategory').innerHTML = "<strong>Category:</strong> <em style='color:orange;'>[" + event.category + "]</em>";
         } else {
           document.getElementById('modalCategory').textContent = '';
         }
@@ -783,15 +852,15 @@
         const sortedItems = itemsToRender.sort((a, b) => new Date(a.start) - new Date(b.start));
         list.innerHTML = sortedItems.map(event => {
           const categoriesText = event.categories && Array.isArray(event.categories) && event.categories.length
-            ? `<small style="color:orange; font-style:italic;"> [${event.categories.join(', ')}]</small>`
-            : (event.category ? `<small style="color:orange; font-style:italic;"> [${event.category}]</small>` : '');
+            ? "<small style='color:orange; font-style:italic;'> [" + event.categories.join(', ') + "]</small>"
+            : (event.category ? "<small style='color:orange; font-style:italic;'> [" + event.category + "]</small>" : '');
           const datePart = event.end 
-            ? `<span class="timeline-dates"><span class="timeline-start">${formatToISODate(event.start)}</span><span class="timeline-end"> - ${formatToISODate(event.end)}</span></span>` 
-            : `<span class="timeline-dates"><span class="timeline-start">${formatToISODate(event.start)}</span></span>`;
-          return `<li data-id="${event.id}">
-                    ${datePart} - <span class="timeline-content">${event.content}</span>
-                    ${categoriesText}
-                  </li>`;
+            ? "<span class='timeline-dates'><span class='timeline-start'>" + formatToISODate(event.start) + "</span><span class='timeline-end'> - " + formatToISODate(event.end) + "</span></span>" 
+            : "<span class='timeline-dates'><span class='timeline-start'>" + formatToISODate(event.start) + "</span></span>";
+          return "<li data-id='" + event.id + "'>" +
+                    datePart + " - <span class='timeline-content'>" + event.content + "</span>" +
+                    categoriesText +
+                  "</li>";
         }).join('');
       };
 
@@ -815,11 +884,11 @@
         // Update toggle button icon accordingly
         const themeToggleBtn = document.getElementById('themeToggle');
         if (theme === 'dark') {
-          themeToggleBtn.innerHTML = `<i class="fas fa-sun"></i>`;
+          themeToggleBtn.innerHTML = "<i class='fas fa-sun'></i>";
         } else if (theme === 'high-contrast') {
-          themeToggleBtn.innerHTML = `<i class="fas fa-adjust"></i>`;
+          themeToggleBtn.innerHTML = "<i class='fas fa-adjust'></i>";
         } else {
-          themeToggleBtn.innerHTML = `<i class="fas fa-moon"></i>`;
+          themeToggleBtn.innerHTML = "<i class='fas fa-moon'></i>";
         }
       };
 
