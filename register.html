@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <h3><a href="index.html">GlyphFitness</a></h3>
+    </header>
+    <hr>
+
+    <h3>Register</h3>
+
+    <div >
+    <form>
+        <div>
+            <label for="fname">First Name </label><br>
+            <input type="text" id="fname" name="fname">
+        </div>
+
+        <div>
+            <label for="lname">Last Name </label><br>
+            <input type="text" id="lname" name="lname">
+        </div><br>
+
+        <div>
+            <label for="email">Email </label><br>
+            <input type="email" id="email" name="email">
+        </div><br>
+        
+        <div>
+            <label for="password">Password </label><br>
+            <input type="password" id="password" name="password">
+        </div>
+
+        <div>
+            <label for="cpassword">Confirm password </label><br>
+            <input type="password" id="cpassword" name="cpassword">
+        </div><br>
+
+        <div>
+            <label for="phone">Phone number</label><br>
+            <input type="tel" id="phone" name="phone" placeholder="0701234567" required>
+        </div><br>
+
+        <div>
+            <label for="birthday">Birthday </label><br>
+            <input type="date" id="birthday" name="birthday">
+        </div><br>
+
+        <div>
+            <label>Gender</label><br>
+            <input type="radio" id="male" name="gender" value="male">
+            <label for="male">Male</label><br>
+            <input type="radio" id="female" name="gender" value="female">
+            <label for="female">Female</label><br>
+            <input type="radio" id="other" name="gender" value="other">
+            <label for="other">Other</label><br><br>
+        </div>
+
+        <div>
+            <label for="height">Height (cm):</label><br>
+            <input type="number" id="height" name="height" required><br><br>
+            <label for="weight">Weight (Kg):</label><br>
+            <input type="number" id="weight" name="weight" required><br><br>
+        </div>
+
+        <div>
+            <label>Do you have any medical conditions or allergies?</label><br>
+            <input type="radio" id="conditionsYes" name="conditions" value="conditionsYes">
+            <label for="conditionsYes">Yes</label><br>
+            <input type="radio" id="conditionsNo" name="conditions" value="conditionsNo">
+            <label for="conditionsNo">No</label><br><br>
+
+            <label>If yes, please provide details</label><br>
+            <textarea name="message" rows="5" cols="50"></textarea><br><br>
+        </div>
+
+
+        <div>
+            <label>Choose Membership Type</label><br>
+            <input type="radio" id="MonthlyMembership" name="membership" value="MonthlyMembership">
+            <label for="MonthlyMembership">Monthly Membership</label><br><br>
+        </div>
+
+        <div>
+            <input type="checkbox" id="TermsConditions" name="TermsConditions" value="TermsConditions">
+            <label for="TermsConditions">I agree to Terms & Conditions</label><br>
+            <input type="checkbox" id="PrivacyPolicy" name="PrivacyPolicy" value="PrivacyPolicy">
+            <label for="PrivacyPolicy">I agree to Privacy Policy</label><br><br>
+        </div>
+        
+        <input type="submit" value="Submit"><br><br>
+
+        Already have an account? 
+        <a href="login.html">Login</a>
+
+    </form>
+    </div>
+
+    
+</body>
+</html>
