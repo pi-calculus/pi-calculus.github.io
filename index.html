@@ -1,76 +1,355 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlyphFitness</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serenity Haven — Boutique Guest House</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
 
-    <header>
-        <h3><a href="index.html">GlyphFitness</a></h3>
-        <nav>
-            <div style="text-align: right;">
-                <a href="#service">Service</a>&nbsp 
-                <a href="#about">About Us</a>&nbsp 
-                <a href="#contact">Contact</a>&nbsp 
-                <a href="register.html"><button> Register</button></a>&nbsp  
-                <a href="login.html"><button>Login</button></a> &nbsp 
-            </div>
-        </nav>
-        <hr>
-    </header>
+  <!-- ═══════════════════════════ NAV ═══════════════════════════ -->
+  <nav class="nav" id="navbar">
+    <div class="nav__logo">
+      <span class="nav__logo-leaf">✦</span>
+      <span>Serenity Haven</span>
+    </div>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#rooms">Rooms</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#reviews">Reviews</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav__cta">Book Now</a>
+    <button class="nav__hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
 
-    <img src="UniversalUpscaler_cb6709c1-408f-44ae-b6ad-6e1c3381d275.jpg" alt="" width="250">
-    <img src="UniversalUpscaler_5cb75a50-3a1c-4131-8fc7-fdf4cee17f1f.jpg" alt="" width="250">
-    <hr>
+  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+  <section class="hero" id="home">
+    <div class="hero__bg"></div>
+    <div class="hero__overlay"></div>
+    <div class="hero__content">
+      <p class="hero__eyebrow">A Peaceful Sanctuary Awaits</p>
+      <h1 class="hero__title">Where Every<br/><em>Moment</em> Is<br/>A Memory</h1>
+      <p class="hero__sub">Nestled in nature's embrace — your perfect escape from the everyday.</p>
+      <div class="hero__actions">
+        <a href="#contact" class="btn btn--primary">Book Your Stay</a>
+        <a href="#rooms" class="btn btn--ghost">Explore Rooms</a>
+      </div>
+    </div>
+    <div class="hero__scroll">
+      <span>Scroll</span>
+      <div class="hero__scroll-line"></div>
+    </div>
+    <div class="hero__badges">
+      <div class="badge"><span class="badge__num">12+</span><span class="badge__txt">Years of<br/>Hospitality</span></div>
+      <div class="badge"><span class="badge__num">4.9★</span><span class="badge__txt">Guest<br/>Rating</span></div>
+      <div class="badge"><span class="badge__num">200+</span><span class="badge__txt">Happy<br/>Couples</span></div>
+    </div>
+  </section>
 
-    <section id="service" style="text-align:justify;">
-        <h2>Our Services</h2>
-        <p>
-          We provide a variety of training programs and state-of-the-art equipment. 
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Architecto blanditiis, sequi dolorem eos odio repellendus. 
-          Temporibus, iure! Magnam cupiditate ratione quos maxime, soluta reiciendis, itaque quasi, quaerat cum a vel.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Consequuntur perspiciatis alias minima voluptatem repellendus consectetur ipsa assumenda cum voluptatibus adipisci? Distinctio earum sequi totam voluptatibus! Repellendus ut tenetur magni officia.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora unde, officiis incidunt itaque distinctio nam quasi! Minima totam, corporis nesciunt nisi unde magni, vitae, nulla ratione cumque quas at vel.
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit nobis blanditiis nemo iste quo, dolorem, similique ducimus maiores tempora harum natus deserunt ullam facere atque beatae eos quam aliquid fuga!
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Est eos quia voluptas corporis pariatur, ut aliquid sed cumque deserunt esse facere nam ipsa itaque sapiente nostrum, expedita eligendi explicabo sit?
-        </p>
-    </section>
-  
-    <section id="about" style="text-align:justify;">
-        <h2>About Us</h2>
-        <p>Learn more about our mission and the team behind the gym. 
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Reiciendis cum commodi fugiat deserunt voluptatem quam quas voluptatibus temporibus? Corporis possimus quam vero, delectus ut magni hic itaque consequatur quidem numquam!
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Architecto blanditiis, sequi dolorem eos odio repellendus. 
-          Temporibus, iure! Magnam cupiditate ratione quos maxime, soluta reiciendis, itaque quasi, quaerat cum a vel. 
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Consequuntur perspiciatis alias minima voluptatem repellendus consectetur ipsa assumenda cum voluptatibus adipisci? Distinctio earum sequi totam voluptatibus! Repellendus ut tenetur magni officia. Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-          Tempora unde, officiis incidunt itaque distinctio nam quasi! Minima totam, corporis nesciunt nisi unde magni, vitae, nulla ratione cumque quas at vel. Lorem ipsum dolor sit amet, consectetur adipisicing elit. 
-          Odit nobis blanditiis nemo iste quo, dolorem, similique ducimus maiores tempora harum natus deserunt ullam facere atque beatae eos quam aliquid fuga! Lorem ipsum dolor sit amet consectetur adipisicing elit. Est eos quia voluptas corporis pariatur, ut aliquid sed cumque deserunt esse facere nam ipsa itaque sapiente nostrum, expedita eligendi explicabo sit? 
-        </p>
-    </section>
-  
-    <section id="contact" style="text-align:justify;">
-        <h2>Contact</h2>
-        <p>Get in touch with us for any inquiries or support.
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati harum quibusdam veritatis est? Ea temporibus soluta quasi minus debitis numquam, aliquam obcaecati id odit modi cumque, facilis, in illum repudiandae.
-        </p>
-    </section>
-    <br>
-    <hr>
-    
-
-    <footer>
-        <div style="text-align: center;">
-            &#169; 2025 Copyright:
-            <a href="index.html">https://glyphfitness.com</a>
+  <!-- ═══════════════════════════ ABOUT ═══════════════════════════ -->
+  <section class="about section" id="about">
+    <div class="container about__grid">
+      <div class="about__visual">
+        <div class="about__img-main">
+          <img src="https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=600&q=80" alt="Guest house interior"/>
+          <div class="about__img-tag">Est. 2012</div>
         </div>
-    </footer>
+        <div class="about__img-secondary">
+          <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=80" alt="Cozy room"/>
+        </div>
+        <div class="about__decor-circle"></div>
+      </div>
+      <div class="about__content">
+        <p class="section__eyebrow">Our Story</p>
+        <h2 class="section__title">A Home Away<br/>From Home</h2>
+        <div class="about__divider"></div>
+        <p class="about__text">Tucked away from the city's rush, Serenity Haven was born from a simple dream — to offer weary travellers a place where time slows down. Our boutique guest house blends warm, earthy interiors with genuine Sri Lankan hospitality.</p>
+        <p class="about__text">Every corner of Serenity Haven has been curated with care — from the hand-picked organic linens to the garden-view breakfast nook. We believe a stay here isn't just accommodation; it's an experience.</p>
+        <div class="about__features">
+          <div class="about__feature"><i class="fa-solid fa-leaf"></i><span>Eco-Friendly</span></div>
+          <div class="about__feature"><i class="fa-solid fa-utensils"></i><span>Home-Cooked Meals</span></div>
+          <div class="about__feature"><i class="fa-solid fa-shield-halved"></i><span>Safe & Private</span></div>
+          <div class="about__feature"><i class="fa-solid fa-spa"></i><span>Peaceful Garden</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- ═══════════════════════════ ROOMS ═══════════════════════════ -->
+  <section class="rooms section" id="rooms">
+    <div class="container">
+      <div class="section__header">
+        <p class="section__eyebrow">Accommodations</p>
+        <h2 class="section__title">Our Rooms & Suites</h2>
+        <p class="section__sub">Each room is thoughtfully designed to offer maximum comfort and serenity.</p>
+      </div>
+      <div class="rooms__grid">
+
+        <div class="room-card">
+          <div class="room-card__img">
+            <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" alt="Garden View Room"/>
+            <div class="room-card__badge">Most Popular</div>
+          </div>
+          <div class="room-card__body">
+            <div class="room-card__top">
+              <h3>Garden View Room</h3>
+              <div class="room-card__price"><span>$65</span>/night</div>
+            </div>
+            <p>Wake up to lush garden views. Perfect for solo travellers seeking tranquility.</p>
+            <div class="room-card__amenities">
+              <span><i class="fa-solid fa-wifi"></i> WiFi</span>
+              <span><i class="fa-solid fa-snowflake"></i> AC</span>
+              <span><i class="fa-solid fa-mug-hot"></i> Breakfast</span>
+              <span><i class="fa-solid fa-tv"></i> Smart TV</span>
+            </div>
+            <a href="#contact" class="btn btn--room">Reserve Room</a>
+          </div>
+        </div>
+
+        <div class="room-card room-card--featured">
+          <div class="room-card__img">
+            <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&q=80" alt="Honeymoon Suite"/>
+            <div class="room-card__badge room-card__badge--gold">Honeymoon Suite</div>
+          </div>
+          <div class="room-card__body">
+            <div class="room-card__top">
+              <h3>Honeymoon Suite</h3>
+              <div class="room-card__price"><span>$120</span>/night</div>
+            </div>
+            <p>A romantic haven with a private balcony, bathtub, and curated couples experience.</p>
+            <div class="room-card__amenities">
+              <span><i class="fa-solid fa-wifi"></i> WiFi</span>
+              <span><i class="fa-solid fa-snowflake"></i> AC</span>
+              <span><i class="fa-solid fa-mug-hot"></i> Breakfast</span>
+              <span><i class="fa-solid fa-bath"></i> Bathtub</span>
+            </div>
+            <a href="#contact" class="btn btn--room">Reserve Room</a>
+          </div>
+        </div>
+
+        <div class="room-card">
+          <div class="room-card__img">
+            <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=600&q=80" alt="Family Suite"/>
+          </div>
+          <div class="room-card__body">
+            <div class="room-card__top">
+              <h3>Family Suite</h3>
+              <div class="room-card__price"><span>$95</span>/night</div>
+            </div>
+            <p>Spacious and warm, with two bedrooms and a shared living area for the whole family.</p>
+            <div class="room-card__amenities">
+              <span><i class="fa-solid fa-wifi"></i> WiFi</span>
+              <span><i class="fa-solid fa-snowflake"></i> AC</span>
+              <span><i class="fa-solid fa-mug-hot"></i> Breakfast</span>
+              <span><i class="fa-solid fa-children"></i> Kid-Friendly</span>
+            </div>
+            <a href="#contact" class="btn btn--room">Reserve Room</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ GALLERY ═══════════════════════════ -->
+  <section class="gallery section" id="gallery">
+    <div class="container">
+      <div class="section__header">
+        <p class="section__eyebrow">Visual Journey</p>
+        <h2 class="section__title">Life at Serenity Haven</h2>
+      </div>
+    </div>
+    <div class="gallery__grid">
+      <div class="gallery__item gallery__item--tall">
+        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&q=80" alt="Lobby"/>
+        <div class="gallery__hover"><span>Lobby</span></div>
+      </div>
+      <div class="gallery__item">
+        <img src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=600&q=80" alt="Garden"/>
+        <div class="gallery__hover"><span>Garden</span></div>
+      </div>
+      <div class="gallery__item">
+        <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&q=80" alt="Spa"/>
+        <div class="gallery__hover"><span>Relaxation Area</span></div>
+      </div>
+      <div class="gallery__item gallery__item--wide">
+        <img src="https://images.unsplash.com/photo-1559599101-f09722fb4948?w=800&q=80" alt="Dining"/>
+        <div class="gallery__hover"><span>Dining</span></div>
+      </div>
+      <div class="gallery__item">
+        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80" alt="Room Interior"/>
+        <div class="gallery__hover"><span>Room Interior</span></div>
+      </div>
+      <div class="gallery__item">
+        <img src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?w=600&q=80" alt="Sunrise View"/>
+        <div class="gallery__hover"><span>Sunrise View</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ REVIEWS ═══════════════════════════ -->
+  <section class="reviews section" id="reviews">
+    <div class="reviews__bg-text">LOVE</div>
+    <div class="container">
+      <div class="section__header">
+        <p class="section__eyebrow">Testimonials</p>
+        <h2 class="section__title">What Our Guests Say</h2>
+      </div>
+      <div class="reviews__grid">
+
+        <div class="review-card">
+          <div class="review-card__stars">★★★★★</div>
+          <p class="review-card__text">"Serenity Haven is everything its name promises. The room was immaculate, the garden was magical at dawn, and the staff made us feel like family. We'll return every anniversary."</p>
+          <div class="review-card__author">
+            <div class="review-card__avatar" style="background:#b5a88a">A</div>
+            <div>
+              <strong>Amara & Kasun</strong>
+              <span>Honeymoon Guests, 2024</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card review-card--accent">
+          <div class="review-card__stars">★★★★★</div>
+          <p class="review-card__text">"I've stayed at many places across Sri Lanka — Serenity Haven stands apart. The breakfast was divine, the bed was cloud-like, and the garden walk at sunset was an experience I cherish."</p>
+          <div class="review-card__author">
+            <div class="review-card__avatar" style="background:#7a9e7e">T</div>
+            <div>
+              <strong>Thomas Wright</strong>
+              <span>Solo Traveller, UK</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-card__stars">★★★★★</div>
+          <p class="review-card__text">"Perfect for families! The kids loved the garden and we loved the peace. The hosts were incredibly kind and helpful with local recommendations. Truly a hidden gem."</p>
+          <div class="review-card__author">
+            <div class="review-card__avatar" style="background:#c4a882">P</div>
+            <div>
+              <strong>Priya Menon</strong>
+              <span>Family Stay, India</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ CONTACT ═══════════════════════════ -->
+  <section class="contact section" id="contact">
+    <div class="container contact__grid">
+      <div class="contact__info">
+        <p class="section__eyebrow">Get in Touch</p>
+        <h2 class="section__title">Plan Your<br/>Perfect Stay</h2>
+        <p class="contact__sub">We'd love to host you. Reach out and our team will respond within 24 hours.</p>
+        <div class="contact__details">
+          <div class="contact__detail">
+            <i class="fa-solid fa-phone"></i>
+            <div><strong>Call Us</strong><span>+94 77 123 4567</span></div>
+          </div>
+          <div class="contact__detail">
+            <i class="fa-solid fa-envelope"></i>
+            <div><strong>Email</strong><span>hello@serenityhaven.lk</span></div>
+          </div>
+          <div class="contact__detail">
+            <i class="fa-solid fa-location-dot"></i>
+            <div><strong>Location</strong><span>12 Garden Lane, Kandy, Sri Lanka</span></div>
+          </div>
+        </div>
+        <div class="contact__social">
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="#" aria-label="TripAdvisor"><i class="fa-brands fa-tripadvisor"></i></a>
+        </div>
+      </div>
+
+      <div class="contact__form-wrap">
+        <form class="contact__form" id="contactForm">
+          <div class="form__row">
+            <div class="form__group">
+              <label>Your Name</label>
+              <input type="text" placeholder="John Smith" required/>
+            </div>
+            <div class="form__group">
+              <label>Email Address</label>
+              <input type="email" placeholder="john@email.com" required/>
+            </div>
+          </div>
+          <div class="form__row">
+            <div class="form__group">
+              <label>Check-in Date</label>
+              <input type="date" required/>
+            </div>
+            <div class="form__group">
+              <label>Check-out Date</label>
+              <input type="date" required/>
+            </div>
+          </div>
+          <div class="form__group">
+            <label>Room Type</label>
+            <select>
+              <option>Garden View Room</option>
+              <option>Honeymoon Suite</option>
+              <option>Family Suite</option>
+            </select>
+          </div>
+          <div class="form__group">
+            <label>Message</label>
+            <textarea placeholder="Any special requests or questions..." rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn--primary btn--full">Send Booking Request</button>
+          <div class="form__success" id="formSuccess">✓ Message sent! We'll reply within 24 hours.</div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Map -->
+    <div class="contact__map">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63371.80779701535!2d80.60523555!3d7.2905715!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae366266498acd3%3A0x411a3818a1e03c35!2sKandy!5e0!3m2!1sen!2slk!4v1680000000000!5m2!1sen!2slk"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Location Map">
+      </iframe>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <div class="footer__logo">✦ Serenity Haven</div>
+        <p>A boutique guest house crafted for those who seek peace, comfort, and genuine connection with nature.</p>
+      </div>
+      <div class="footer__links">
+        <h4>Quick Links</h4>
+        <a href="#about">About Us</a>
+        <a href="#rooms">Rooms</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer__links">
+        <h4>Policies</h4>
+        <a href="#">Check-in Policy</a>
+        <a href="#">Cancellation</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© 2025 Serenity Haven Guest House. All rights reserved. Designed with ♥</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
